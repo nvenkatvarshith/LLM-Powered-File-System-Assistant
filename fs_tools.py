@@ -1,6 +1,5 @@
 import os
-import docx2txt
-import pdfplumber
+import importlib
 
 
 def read_file(filepath: str) -> dict:
@@ -14,10 +13,12 @@ def read_file(filepath: str) -> dict:
             with open(filepath, "r", encoding="utf-8", errors="ignore") as file:
                 content = file.read()
         elif extension == ".docx":
-            # docx2txt handles reading and extracting text from .docx files
+            # Dynamically import docx2txt so static analysis doesn't require it
+            docx2txt = importlib.import_module("docx2txt")
             content = docx2txt.process(filepath) or ""
         elif extension == ".pdf":
-            # pdfplumber extracts text from all pages of the PDF
+            # Dynamically import pdfplumber for PDF text extraction
+            pdfplumber = importlib.import_module("pdfplumber")
             with pdfplumber.open(filepath) as pdf:
                 pages_text = [(page.extract_text() or "") for page in pdf.pages]
             content = "\n".join(pages_text)
